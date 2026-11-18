@@ -78,10 +78,6 @@
   h2{font-size:clamp(1.9rem,4.5vw,2.8rem);letter-spacing:-.02em;margin-bottom:10px}
   .sub{color:var(--muted);margin-bottom:38px;max-width:560px}
 
-  /* reveal on scroll */
-  .reveal{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
-  .reveal.in{opacity:1;transform:none}
-
   /* ---------- about / terminal ---------- */
   .about-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:start}
   .about-grid p{color:var(--muted);margin-bottom:14px}
@@ -251,6 +247,9 @@
   .next .q{font-size:2.2rem;animation:bob 4s ease-in-out infinite}
   .next h3{font-size:1.25rem}
   .next p{color:var(--muted);font-size:.92rem}
+  .next .chips{margin-top:4px;gap:7px}
+  .next .chip.active{border-color:rgba(76,201,240,.35);color:var(--a3)}
+  .next .chip.done{border-color:rgba(55,224,138,.35);color:#37e08a}
   .xp{height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}
   .xp i{display:block;height:100%;width:100%;border-radius:8px;background:linear-gradient(90deg,var(--a3),var(--a4),var(--a2),var(--a3));
     background-size:200% 100%;animation:xp 3s linear infinite;transform-origin:left}
@@ -282,7 +281,7 @@
   .cta .btns{justify-content:center}
 
   footer{padding:34px 0 46px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.82rem}
-  #top-btn{position:fixed;right:20px;bottom:20px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+  #top-btn{position:fixed;right:20px;bottom:72px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
     background:rgba(14,16,24,.8);backdrop-filter:blur(10px);color:#fff;font-size:1.1rem;cursor:pointer;opacity:0;pointer-events:none;transition:.3s}
   #top-btn.show{opacity:1;pointer-events:auto}
   #top-btn:hover{border-color:var(--a2);transform:translateY(-3px)}
@@ -292,12 +291,93 @@
     .pill ul{gap:12px;font-size:.8rem}
     .logo{display:none}
     .pill{justify-content:center}
-    .cert{flex-direction:column;text-align:center}
   }
-  @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    .reveal{opacity:1;transform:none}
-  }
+
+/* ---------- Figma-style Full-Site Builder Swarm (Slow & Cinematic) ---------- */
+#build-swarm{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
+.swarm-cursor{position:absolute;left:0;top:0;width:22px;height:28px;will-change:transform;transition:transform 1.15s cubic-bezier(.22,.78,.28,1)}
+.swarm-cursor svg{display:block;width:22px;height:28px;overflow:visible}
+
+
+/* Hidden initial state until built */
+.swarm-target{opacity:0;transform:translateY(16px) scale(.975);transition:opacity .85s ease,transform .95s cubic-bezier(.2,.75,.25,1)}
+.swarm-target.swarm-built{opacity:1!important;transform:none!important}
+
+/* Figma selection box, handles & live W x H pill */
+.swarm-target.swarm-building{outline:1.5px solid #0d99ff!important;outline-offset:3px;position:relative}
+.swarm-target.swarm-building::after{content:attr(data-build-size);position:absolute;left:0;top:100%;margin-top:5px;padding:2px 6px;border-radius:3px;background:#0d99ff;color:#fff;font:600 10px var(--mono);white-space:nowrap;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.swarm-frame-handles{display:none;position:absolute;inset:-4px;pointer-events:none;z-index:20}
+.swarm-target.swarm-building > .swarm-frame-handles{display:block}
+.swarm-frame-handles i{position:absolute;width:7px;height:7px;background:#fff;border:1.5px solid #0d99ff}
+.swarm-frame-handles i:nth-child(1){top:0;left:0}
+.swarm-frame-handles i:nth-child(2){top:0;right:0}
+.swarm-frame-handles i:nth-child(3){bottom:0;left:0}
+.swarm-frame-handles i:nth-child(4){bottom:0;right:0}
+
+.swarm-heading-typing{animation:swarm-type 1.1s steps(24,end) both}
+@keyframes swarm-type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+
+/* Finale Signature Showcase */
+.swarm-finale-wrap{
+  margin:42px auto 10px;
+  max-width:560px;
+  padding:28px 24px;
+  border-radius:24px;
+  background:rgba(14,16,24,.78);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(14px);
+  text-align:center;
+  position:relative;
+  opacity:0;
+  transform:translateY(18px) scale(.96);
+  transition:opacity .9s ease, transform .95s cubic-bezier(.2,.75,.25,1), box-shadow .8s ease;
+}
+.swarm-finale-wrap.swarm-built{
+  opacity:1!important;
+  transform:none!important;
+  box-shadow:0 24px 70px -20px rgba(124,92,255,.45);
+}
+.swarm-finale-label{
+  font:600 .72rem var(--mono);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--a3);
+  margin-bottom:8px;
+}
+.swarm-finale-name{
+  font-size:clamp(2rem,5vw,3.1rem);
+  font-weight:700;
+  letter-spacing:-.03em;
+  line-height:1.1;
+  background:linear-gradient(100deg,var(--a1),var(--a2) 40%,var(--a4) 75%,var(--a3));
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:shine 5s linear infinite;
+}
+.swarm-finale-sub{
+  font:500 .8rem var(--mono);
+  color:var(--muted);
+  margin-top:8px;
+}
+.swarm-cursor.orbiting{
+  transition:none!important;
+}
+
+/* Floating HUD Controls */
+.swarm-hud{position:fixed;right:20px;bottom:20px;z-index:9998;display:flex;gap:10px;align-items:center}
+.swarm-hud button{padding:10px 15px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(14,16,24,.9);backdrop-filter:blur(12px);color:#eef1f8;font:600 11.5px var(--mono);cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.45);transition:.2s}
+.swarm-hud button:hover{transform:translateY(-2px);border-color:#0d99ff;color:#fff}
+.swarm-status{padding:8px 13px;border-radius:999px;background:rgba(13,153,255,.15);border:1px solid rgba(13,153,255,.4);color:#7cc4ff;font:600 11px var(--mono);backdrop-filter:blur(10px)}
+
+.swarm-burst{position:absolute;left:0;top:0;width:7px;height:11px;border-radius:2px;will-change:transform,opacity}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .swarm-target{opacity:1!important;transform:none!important}
+}
 </style>
 </head>
 <body>
@@ -336,23 +416,22 @@
 
   <section id="about">
     <div class="wrap">
-      <div class="reveal">
+      <div class="sec-head">
         <div class="eyebrow">// 01 about</div>
         <h2>A student who learns by building.</h2>
         <p class="sub">Less reading about tech, more shipping it.</p>
       </div>
       <div class="about-grid">
-        <div class="reveal">
+        <div class="about-copy">
           <p>I'm studying Computer Science Engineering at LJ Polytechnic. Instead of only reading about technology, I build real things: an on-device AI app, a bakery website, and a full online ordering system for a real street-food stall.</p>
           <p>I'm still exploring which area I enjoy most, so I'm looking for internships where I can learn, contribute and grow.</p>
           <div class="stats">
-            <!-- Update these numbers any time -->
             <div class="stat"><b data-count="3">0</b><span>projects</span></div>
             <div class="stat"><b data-count="2">0</b><span>year of diploma</span></div>
             <div class="stat"><b data-count="1">0</b><span>real business</span></div>
           </div>
         </div>
-        <div class="term reveal">
+        <div class="term">
           <div class="term-top"><i></i><i></i><i></i></div>
           <div class="term-body">
             <div><span class="c-p">$</span> whoami</div>
@@ -370,11 +449,10 @@
         </div>
       </div>
 
-      <div class="marquee reveal">
-        <!-- Edit to match what you actually know. Keep both copies identical. -->
+      <div class="marquee">
         <div class="track">
-          <span>Python</span><span>Flask</span><span>HTML &amp; CSS</span><span>JavaScript</span><span>Local LLMs</span><span>Mobile Apps</span><span>Git &amp; GitHub</span>
-          <span>Python</span><span>Flask</span><span>HTML &amp; CSS</span><span>JavaScript</span><span>Local LLMs</span><span>Mobile Apps</span><span>Git &amp; GitHub</span>
+          <span>Python</span><span>Flask</span><span>HTML &amp; CSS</span><span>JavaScript</span><span>Local LLMs</span><span>Mobile Apps</span><span>Git &amp; GitHub</span><span>Razorpay</span>
+          <span>Python</span><span>Flask</span><span>HTML &amp; CSS</span><span>JavaScript</span><span>Local LLMs</span><span>Mobile Apps</span><span>Git &amp; GitHub</span><span>Razorpay</span>
         </div>
       </div>
     </div>
@@ -382,7 +460,7 @@
 
   <section id="projects">
     <div class="wrap">
-      <div class="reveal">
+      <div class="sec-head">
         <div class="eyebrow">// 02 projects</div>
         <h2>Things I've built.</h2>
         <p class="sub">Three projects, three different problems. Hover the visuals.</p>
@@ -391,7 +469,7 @@
       <div class="projects">
 
         <!-- ============ 01 EDITH ============ -->
-        <article class="proj reveal">
+        <article class="proj">
           <div class="proj-info">
             <div class="pnum">01</div>
             <div class="ptag">Mobile app · On-device AI</div>
@@ -403,8 +481,7 @@
               <li>Built around the idea of private, always-available AI</li>
             </ul>
             <div class="chips"><span class="chip">Mobile App</span><span class="chip">Local LLM</span></div>
-            <!-- Replace # with your real links -->
-            <div class="links"><a href="https://github.com/bookmyticket2009-web/EDITH_MOBILE_ASSISTANT">GitHub</a><a href="https://vimeo.com/1239634430?fl=pl&fe=sh">Demo</a></div>
+            <div class="links"><a href="#">GitHub</a><a href="#">Demo</a></div>
           </div>
           <div class="proj-visual" style="--c1:#7c5cff">
             <div class="stage">
@@ -423,7 +500,7 @@
         </article>
 
         <!-- ============ 02 Little Hearthe ============ -->
-        <article class="proj flip reveal">
+        <article class="proj flip">
           <div class="proj-info">
             <div class="pnum">02</div>
             <div class="ptag">Website · Small business</div>
@@ -435,7 +512,7 @@
               <li>Responsive, so it works on phones and desktops</li>
             </ul>
             <div class="chips"><span class="chip">Website</span><span class="chip">Responsive</span></div>
-            <div class="links"><a href="https://little-hearthe.onrender.com/">Live site</a><a href="https://github.com/bookmyticket2009-web/bakery-web-app">GitHub</a></div>
+            <div class="links"><a href="#">Live site</a><a href="#">GitHub</a></div>
           </div>
           <div class="proj-visual" style="--c1:#ff9f43">
             <div class="stage">
@@ -457,7 +534,7 @@
         </article>
 
         <!-- ============ 03 Steam Squad Momos ============ -->
-        <article class="proj reveal">
+        <article class="proj">
           <div class="proj-info">
             <div class="pnum">03</div>
             <div class="ptag">Full-stack · Real business</div>
@@ -469,8 +546,8 @@
               <li>A 5-minute refund window after ordering</li>
               <li>Admin dashboard to manage orders</li>
             </ul>
-            <div class="chips"><span class="chip">Flask</span><span class="chip">Admin Dashboard</span></div>
-            <div class="links"><a href="https://ssfood-0j3y.onrender.com/">Live site</a><a href="https://github.com/bookmyticket2009-web/steam-squad">GitHub</a></div>
+            <div class="chips"><span class="chip">Flask</span><span class="chip">Razorpay</span><span class="chip">Admin Dashboard</span></div>
+            <div class="links"><a href="#">Live site</a><a href="#">GitHub</a></div>
           </div>
           <div class="proj-visual" style="--c1:#ff4d8d">
             <div class="stage">
@@ -500,14 +577,14 @@
 
   <section id="learning">
     <div class="wrap">
-      <div class="reveal">
+      <div class="sec-head">
         <div class="eyebrow">// 03 learning</div>
         <h2>Always levelling up.</h2>
         <p class="sub">Courses that back up what I build.</p>
       </div>
 
       <div class="learn">
-        <article class="cert-card reveal">
+        <article class="cert-card">
           <div class="cert-in">
             <div class="seal">
               <svg viewBox="0 0 130 130"><defs><path id="circ" d="M65,65 m-52,0 a52,52 0 1,1 104,0 a52,52 0 1,1 -104,0"/></defs>
@@ -519,22 +596,28 @@
               <h3>Google AI Professional Certificate</h3>
               <p>Completed on Coursera.</p>
               <div class="chips"><span class="chip">Artificial Intelligence</span><span class="chip">Coursera</span></div>
-              <!-- Replace # with your certificate link -->
-              <div class="links"><a href="https://www.coursera.org/account/accomplishments/professional-cert/7PHZB95F6HNU">View certificate</a></div>
+              <div class="links"><a href="#">View certificate</a></div>
             </div>
           </div>
         </article>
 
-        <article class="next reveal">
+        <article class="next">
           <div class="q">🔓</div>
-          <h3>Next unlock</h3>
-          <p>More courses are on the way. I pick them based on what my next project needs.</p>
+          <h3>Active &amp; Upcoming Courses</h3>
+          <p>Currently levelling up across multiple tracks alongside my diploma:</p>
+          <div class="chips">
+            <span class="chip active">Google Cybersecurity</span>
+            <span class="chip active">Python Automation</span>
+            <span class="chip active">Networking &amp; VLANs</span>
+            <span class="chip">Cloud &amp; Linux</span>
+            <span class="chip">+ More in queue</span>
+          </div>
           <div class="xp"><i></i></div>
-          <div class="xp-l"><span>learning mode</span><span>always on</span></div>
+          <div class="xp-l"><span>multi-course mode</span><span>in progress</span></div>
         </article>
       </div>
 
-      <div class="loop reveal">
+      <div class="loop">
         <div class="step"><div class="ic">📚</div><b>Learn</b><span>take a course</span></div>
         <div class="arr">→</div>
         <div class="step"><div class="ic">🛠️</div><b>Build</b><span>make a real project</span></div>
@@ -546,12 +629,11 @@
 
   <section id="contact">
     <div class="wrap">
-      <div class="cta reveal">
+      <div class="cta">
         <div class="eyebrow">// 04 contact</div>
         <h2>Let's build something <span class="grad">together</span>.</h2>
         <p class="sub">Got an internship opening or a project idea? I'd love to hear about it.</p>
         <div class="btns">
-          <!-- Add a LinkedIn button here later: <a class="btn" href="YOUR_LINKEDIN_URL" target="_blank" rel="noopener">LinkedIn</a> -->
           <a class="btn primary" href="mailto:prasheel0106@gmail.com">Email me</a>
           <a class="btn" href="https://github.com/bookmyticket2009-web" target="_blank" rel="noopener">GitHub</a>
         </div>
@@ -561,8 +643,23 @@
 
 </main>
 
+<div class="wrap">
+  <div class="swarm-finale-wrap" id="swarm-finale">
+    <div class="swarm-finale-label">✦ Crafted collaboratively by 14 agents</div>
+    <div class="swarm-finale-name" id="finale-name-text">Prasheel Shah</div>
+    <div class="swarm-finale-sub">Design · Code · Shipped</div>
+  </div>
+</div>
+
 <footer>© <span id="yr"></span> Prasheel Shah · built by hand</footer>
 <button id="top-btn" aria-label="Back to top">↑</button>
+
+<div id="build-swarm" aria-hidden="true"></div>
+<div class="swarm-hud">
+  <span class="swarm-status" id="swarm-status">⚡ Building (14 agents)</span>
+  <button id="skip-swarm" type="button">Skip</button>
+  <button id="replay-swarm" type="button" style="display:none">▶ Replay Build</button>
+</div>
 
 <script>
 /* footer year */
@@ -592,23 +689,6 @@ window.addEventListener('scroll', function(){
 }, {passive:true});
 topBtn.onclick = function(){ window.scrollTo({top:0, behavior:'smooth'}); };
 
-/* reveal on scroll + counters */
-var io = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    if(!e.isIntersecting) return;
-    e.target.classList.add('in');
-    e.target.querySelectorAll('[data-count]').forEach(function(n){
-      var to = +n.dataset.count, c = 0, step = Math.max(1, Math.ceil(to / 30));
-      var t = setInterval(function(){ c = Math.min(to, c + step); n.textContent = c; if(c >= to) clearInterval(t); }, 40);
-    });
-    io.unobserve(e.target);
-  });
-}, {threshold:.15});
-document.querySelectorAll('.reveal').forEach(function(el, i){
-  el.style.transitionDelay = (i % 3) * 90 + 'ms';
-  io.observe(el);
-});
-
 /* cursor glow */
 var glow = document.getElementById('glow');
 window.addEventListener('mousemove', function(e){ glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; }, {passive:true});
@@ -624,7 +704,7 @@ document.querySelectorAll('.proj-visual, .cert-card').forEach(function(v){
   v.addEventListener('mouseleave', function(){ v.style.transform = ''; });
 });
 
-/* momo refund-window countdown (loops) */
+/* momo refund-window countdown */
 (function(){
   var ring = document.getElementById('ring'), txt = document.getElementById('rtime');
   if(!ring || !txt) return;
@@ -668,6 +748,399 @@ document.querySelectorAll('.proj-visual, .cert-card').forEach(function(v){
     requestAnimationFrame(draw);
   }
   draw();
+})();
+
+/* ==========================================================================
+   FIGMA-STYLE FULL-SITE AUTO-SCROLLING BUILD SWARM (14 CURSORS - SLOW PACE)
+   ========================================================================== */
+(function(){
+  var overlay = document.getElementById('build-swarm');
+  var replayBtn = document.getElementById('replay-swarm');
+  var skipBtn = document.getElementById('skip-swarm');
+  var statusEl = document.getElementById('swarm-status');
+  if(!overlay || !replayBtn) return;
+
+  var names = [
+    'LayoutBot','CSS_Agent','UI_Architect','TypeEngine','GridWorker',
+    'PixelPilot','FrameSmith','AutoLayout','ColorNode','VectorFox',
+    'MotionLab','ProtoBot','LayerLogic','DesignOps'
+  ];
+  var colors = [
+    '#ff8fab','#8be9fd','#bd93f9','#f1fa8c','#ffb86c',
+    '#a7f3d0','#f9a8d4','#93c5fd','#c4b5fd','#fdba74',
+    '#67e8f9','#bef264','#fda4af','#d8b4fe'
+  ];
+
+  // Create 14 clean Figma cursors (no labels)
+  var cursors = [];
+  colors.forEach(function(color, i){
+    var node = document.createElement('div');
+    node.className = 'swarm-cursor';
+    node.innerHTML =
+      '<svg viewBox="0 0 24 30" aria-hidden="true">' +
+        '<path d="M2 1.5L2.5 24L8.4 18.2L12.2 27.5L16.1 25.8L12.2 16.8L21.5 16.1Z" ' +
+        'fill="' + color + '" stroke="#10131b" stroke-width="1.35" stroke-linejoin="round"/>' +
+      '</svg>';
+    overlay.appendChild(node);
+    cursors.push({ el: node, x: innerWidth * (0.08 + (i % 7) * 0.13), y: -60, busy: false, role: 'idle' });
+  });
+
+  // Ordered sequence of elements from top to bottom of the entire site
+  var selector = [
+    'nav .logo', 'nav ul li',
+    '.hero .badge', '.hero h1', '.hero .type', '.hero .lead', '.hero .btn', '.hero .scroll-hint',
+    '#about .eyebrow', '#about h2', '#about .sub', '.about-copy > p', '.stat', '.term', '.term-body > div', '.marquee',
+    '#projects .eyebrow', '#projects h2', '#projects .sub',
+    '.proj:nth-child(1) .pnum', '.proj:nth-child(1) .ptag', '.proj:nth-child(1) h3', '.proj:nth-child(1) > .proj-info > p', '.proj:nth-child(1) .feat li', '.proj:nth-child(1) .chip', '.proj:nth-child(1) .links a', '.proj:nth-child(1) .proj-visual',
+    '.proj:nth-child(2) .pnum', '.proj:nth-child(2) .ptag', '.proj:nth-child(2) h3', '.proj:nth-child(2) > .proj-info > p', '.proj:nth-child(2) .feat li', '.proj:nth-child(2) .chip', '.proj:nth-child(2) .links a', '.proj:nth-child(2) .proj-visual',
+    '.proj:nth-child(3) .pnum', '.proj:nth-child(3) .ptag', '.proj:nth-child(3) h3', '.proj:nth-child(3) > .proj-info > p', '.proj:nth-child(3) .feat li', '.proj:nth-child(3) .chip', '.proj:nth-child(3) .links a', '.proj:nth-child(3) .proj-visual',
+    '#learning .eyebrow', '#learning h2', '#learning .sub', '.cert-card', '.cert-txt .chip', '.next', '.next .chip', '.step', '.arr',
+    '#contact .cta .eyebrow', '#contact .cta h2', '#contact .cta .sub', '#contact .cta .btn',
+    'footer'
+  ].join(',');
+
+  var targets = Array.from(document.querySelectorAll(selector)).filter(function(el, idx, arr){
+    return arr.indexOf(el) === idx;
+  });
+
+  // Prep hidden state & Figma selection handles
+  targets.forEach(function(el){
+    el.classList.add('swarm-target');
+    var handles = document.createElement('span');
+    handles.className = 'swarm-frame-handles';
+    handles.setAttribute('aria-hidden', 'true');
+    handles.innerHTML = '<i></i><i></i><i></i><i></i>';
+    el.appendChild(handles);
+  });
+
+  var timers = [];
+  var isRunning = false;
+  var cursorIdx = 0;
+
+  function addTimer(fn, ms){
+    var id = window.setTimeout(fn, ms);
+    timers.push(id);
+    return id;
+  }
+
+  function clearAllTimers(){
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function moveCursor(c, x, y){
+    c.x = Math.max(4, Math.min(innerWidth - 36, x));
+    c.y = Math.max(4, Math.min(innerHeight - 36, y));
+    c.el.style.opacity = '1';
+    c.el.style.transform = 'translate3d(' + Math.round(c.x) + 'px,' + Math.round(c.y) + 'px,0)';
+  }
+
+  function animateCounters(el){
+    el.querySelectorAll('[data-count]').forEach(function(n){
+      var to = +n.dataset.count, c = 0, step = Math.max(1, Math.ceil(to / 20));
+      var t = setInterval(function(){
+        c = Math.min(to, c + step);
+        n.textContent = c;
+        if(c >= to) clearInterval(t);
+      }, 45);
+    });
+  }
+
+  function getFreeCursor(){
+    // Prefer an idle cursor first, otherwise pick the one whose task is oldest
+    for(var i = 0; i < cursors.length; i++){
+      var idx = (cursorIdx + i) % cursors.length;
+      if(!cursors[idx].busy){
+        cursorIdx = idx + 1;
+        return cursors[idx];
+      }
+    }
+    var fallback = cursors[cursorIdx++ % cursors.length];
+    return fallback;
+  }
+
+  function buildElement(el){
+    if(el.classList.contains('swarm-built')) return;
+    var c = getFreeCursor();
+    c.busy = true;
+
+    // Auto-scroll smoothly so the element is comfortably in the viewport
+    var rect = el.getBoundingClientRect();
+    var absTop = window.scrollY + rect.top;
+    var idealScroll = Math.max(0, absTop - innerHeight * 0.38);
+    if(Math.abs(window.scrollY - idealScroll) > 65){
+      window.scrollTo({ top: idealScroll, behavior: 'smooth' });
+    }
+
+    var r = el.getBoundingClientRect();
+    moveCursor(c, r.left - 4, r.top - 4);
+
+    // Reveal element & show Figma selection border + W x H badge
+    el.classList.add('swarm-built', 'swarm-building');
+    el.setAttribute('data-build-size', Math.round(r.width) + ' × ' + Math.round(r.height));
+    animateCounters(el);
+
+    if(el.matches('h1,h2,h3')){
+      el.classList.remove('swarm-heading-typing');
+      void el.offsetWidth;
+      el.classList.add('swarm-heading-typing');
+    }
+
+    // For larger frames, assign a second helper cursor to co-align the opposite corner!
+    var isLarge = r.width > 240 || r.height > 90;
+    var helper = isLarge ? getFreeCursor() : null;
+    if(helper && helper !== c){
+      helper.busy = true;
+      moveCursor(helper, r.right - 4, r.top - 4);
+      addTimer(function(){
+        var rH = el.getBoundingClientRect();
+        moveCursor(helper, rH.left - 4, rH.bottom - 4);
+      }, 480);
+      addTimer(function(){
+        helper.busy = false;
+      }, 1500);
+    }
+
+    // Drag primary cursor slowly across to bottom-right handle
+    addTimer(function(){
+      var r2 = el.getBoundingClientRect();
+      moveCursor(c, r2.right - 6, r2.bottom - 6);
+    }, 450);
+
+    addTimer(function(){
+      el.classList.remove('swarm-building');
+      c.busy = false;
+    }, 1550);
+  }
+
+  function celebrate(){
+    var parts = [];
+    for(var i = 0; i < 200; i++){
+      var p = document.createElement('i');
+      p.className = 'swarm-burst';
+      p.style.background = colors[i % colors.length];
+      overlay.appendChild(p);
+      var x = Math.random() * innerWidth, y = Math.random() * innerHeight;
+      p.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+      parts.push({
+        el: p, x: x, y: y,
+        vx: (Math.random() - 0.5) * innerWidth * 0.75,
+        vy: (Math.random() - 0.5) * innerHeight * 0.75
+      });
+    }
+    requestAnimationFrame(function(){
+      parts.forEach(function(p){
+        p.el.style.transition = 'transform 2.4s cubic-bezier(.16,.8,.3,1), opacity .5s ease 1.9s';
+        p.el.style.transform = 'translate3d(' + (p.x + p.vx) + 'px,' + (p.y + p.vy) + 'px,0) rotate(480deg)';
+        p.el.style.opacity = '0';
+      });
+    });
+    addTimer(function(){
+      parts.forEach(function(p){ p.el.remove(); });
+    }, 2600);
+  }
+
+  var finaleEl = document.getElementById('swarm-finale');
+  var finaleNameEl = document.getElementById('finale-name-text');
+  var orbitRaf = null;
+  var isOrbiting = false;
+
+  function stopOrbit(){
+    isOrbiting = false;
+    if(orbitRaf){
+      cancelAnimationFrame(orbitRaf);
+      orbitRaf = null;
+    }
+    cursors.forEach(function(c){
+      c.el.classList.remove('orbiting');
+    });
+  }
+
+  function startFinaleOrbit(){
+    if(!finaleEl) return;
+    stopOrbit();
+    isOrbiting = true;
+
+    // Scroll smoothly to center the finale signature card in the viewport
+    var rect = finaleEl.getBoundingClientRect();
+    var targetScroll = Math.max(0, window.scrollY + rect.top - (innerHeight * 0.5 - rect.height * 0.5));
+    window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+
+    // Reveal the signature card with Figma selection box & typewriter reveal
+    var r = finaleEl.getBoundingClientRect();
+    finaleEl.classList.add('swarm-built', 'swarm-building');
+    finaleEl.setAttribute('data-build-size', Math.round(r.width) + ' × ' + Math.round(r.height));
+    if(finaleNameEl){
+      finaleNameEl.classList.remove('swarm-heading-typing');
+      void finaleNameEl.offsetWidth;
+      finaleNameEl.classList.add('swarm-heading-typing');
+    }
+
+    // First glide all 14 cursors smoothly onto an elliptical ring around the name card
+    var initRect = finaleEl.getBoundingClientRect();
+    var cx0 = initRect.left + initRect.width / 2;
+    var cy0 = initRect.top + initRect.height / 2;
+    var rx0 = Math.min(innerWidth * 0.42, initRect.width * 0.58 + 54);
+    var ry0 = initRect.height * 0.58 + 42;
+
+    cursors.forEach(function(c, i){
+      c.busy = true;
+      var ang = (i / cursors.length) * Math.PI * 2;
+      moveCursor(c, cx0 + Math.cos(ang) * rx0 - 10, cy0 + Math.sin(ang) * ry0 - 10);
+    });
+
+    // Once gathered (after 1.15s glide), switch to continuous smooth orbital motion around the name
+    addTimer(function(){
+      if(!isOrbiting) return;
+      finaleEl.classList.remove('swarm-building');
+      cursors.forEach(function(c){ c.el.classList.add('orbiting'); });
+
+      var startTime = performance.now();
+      function orbitLoop(now){
+        if(!isOrbiting) return;
+        var t = (now - startTime) * 0.00055; // slow, graceful orbital speed
+        var box = finaleEl.getBoundingClientRect();
+        var cx = box.left + box.width / 2;
+        var cy = box.top + box.height / 2;
+        var rx = Math.min(innerWidth * 0.43, box.width * 0.58 + 58);
+        var ry = box.height * 0.58 + 44;
+
+        cursors.forEach(function(c, i){
+          var baseAngle = (i / cursors.length) * Math.PI * 2;
+          var wave = Math.sin(t * 2.2 + i) * 10;
+          var angle = baseAngle + t;
+          var x = cx + Math.cos(angle) * (rx + wave) - 10;
+          var y = cy + Math.sin(angle) * (ry + wave * 0.6) - 10;
+          x = Math.max(4, Math.min(innerWidth - 78, x));
+          y = Math.max(4, Math.min(innerHeight - 36, y));
+          c.x = x;
+          c.y = y;
+          c.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+        });
+
+        orbitRaf = requestAnimationFrame(orbitLoop);
+      }
+      orbitRaf = requestAnimationFrame(orbitLoop);
+    }, 1200);
+  }
+
+  function finishBuild(withConfetti){
+    isRunning = false;
+    clearAllTimers();
+    targets.forEach(function(el){
+      el.classList.add('swarm-built');
+      el.classList.remove('swarm-building');
+      animateCounters(el);
+    });
+    statusEl.textContent = '✓ Built for Prasheel Shah';
+    skipBtn.style.display = 'none';
+    replayBtn.style.display = 'inline-block';
+    if(withConfetti) celebrate();
+    startFinaleOrbit();
+  }
+
+  function startSwarm(){
+    stopOrbit();
+    clearAllTimers();
+    isRunning = true;
+    cursorIdx = 0;
+
+    statusEl.textContent = '⚡ Building (14 agents)';
+    skipBtn.style.display = 'inline-block';
+    replayBtn.style.display = 'none';
+
+    targets.forEach(function(el){
+      el.classList.remove('swarm-built', 'swarm-building');
+      el.removeAttribute('data-build-size');
+    });
+    if(finaleEl){
+      finaleEl.classList.remove('swarm-built', 'swarm-building');
+      finaleEl.removeAttribute('data-build-size');
+    }
+    cursors.forEach(function(c, i){
+      c.busy = false;
+      c.x = innerWidth * (0.08 + (i % 7) * 0.13);
+      c.y = -50;
+      c.el.style.transform = 'translate3d(' + Math.round(c.x) + 'px,-50px,0)';
+    });
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // Slowed-down stagger so each frame & cursor drag is easy to watch
+    var delay = 600;
+    targets.forEach(function(el){
+      addTimer(function(){
+        if(isRunning) buildElement(el);
+      }, delay);
+      var isMajor = el.matches('h1, .term, .proj-visual, .cert-card, .cta');
+      delay += isMajor ? 460 : 250;
+    });
+
+    addTimer(function(){
+      if(!isRunning || isOrbiting) return;
+      finishBuild(true);
+    }, delay + 1100);
+  }
+
+  // Active worker pool: guarantees at most 2 cursors remain idle at any moment
+  // Any extra free cursors immediately jump onto visible elements to inspect, tweak, and polish frames
+  window.setInterval(function(){
+    if(!isRunning || isOrbiting) return;
+    var free = cursors.filter(function(c){ return !c.busy; });
+    if(free.length <= 2) return;
+
+    // Put all free cursors except at most 2 to work on currently visible/upcoming elements
+    var workersToAssign = free.slice(0, free.length - 2);
+    var visiblePool = targets.filter(function(el){
+      var r = el.getBoundingClientRect();
+      return r.bottom > 40 && r.top < innerHeight - 40 && r.width > 0;
+    });
+    if(!visiblePool.length) visiblePool = targets.slice(0, 12);
+
+    workersToAssign.forEach(function(c, idx){
+      var el = visiblePool[(cursorIdx + idx) % visiblePool.length];
+      if(!el) return;
+      c.busy = true;
+      var r = el.getBoundingClientRect();
+      var corners = [
+        [r.left - 3, r.top - 3],
+        [r.right - 5, r.top - 3],
+        [r.right - 5, r.bottom - 5],
+        [r.left - 3, r.bottom - 5]
+      ];
+      var p1 = corners[idx % 4];
+      var p2 = corners[(idx + 2) % 4];
+      moveCursor(c, p1[0], p1[1]);
+      addTimer(function(){
+        if(!isRunning || isOrbiting){ c.busy = false; return; }
+        var r2 = el.getBoundingClientRect();
+        var c2 = [
+          [r2.left - 3, r2.top - 3],
+          [r2.right - 5, r2.top - 3],
+          [r2.right - 5, r2.bottom - 5],
+          [r2.left - 3, r2.bottom - 5]
+        ][(idx + 2) % 4];
+        moveCursor(c, c2[0], c2[1]);
+      }, 420);
+      addTimer(function(){
+        c.busy = false;
+      }, 950);
+    });
+  }, 420);
+
+  skipBtn.addEventListener('click', function(){
+    finishBuild(false);
+  });
+
+  replayBtn.addEventListener('click', function(){
+    startSwarm();
+  });
+
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    finishBuild(false);
+  } else {
+    startSwarm();
+  }
 })();
 </script>
 </body>
