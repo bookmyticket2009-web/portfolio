@@ -1000,6 +1000,16 @@ document.querySelectorAll('.proj-visual, .cert-card').forEach(function(v){
         if(!isOrbiting) return;
         var t = (now - startTime) * 0.00055; // slow, graceful orbital speed
         var box = finaleEl.getBoundingClientRect();
+
+        // Hide cursors cleanly when the finale signature card is scrolled out of view
+        if(box.bottom < -40 || box.top > innerHeight + 40){
+          cursors.forEach(function(c){
+            c.el.style.opacity = '0';
+          });
+          orbitRaf = requestAnimationFrame(orbitLoop);
+          return;
+        }
+
         var cx = box.left + box.width / 2;
         var cy = box.top + box.height / 2;
         var rx = Math.min(innerWidth * 0.43, box.width * 0.58 + 58);
@@ -1011,11 +1021,15 @@ document.querySelectorAll('.proj-visual, .cert-card').forEach(function(v){
           var angle = baseAngle + t;
           var x = cx + Math.cos(angle) * (rx + wave) - 10;
           var y = cy + Math.sin(angle) * (ry + wave * 0.6) - 10;
-          x = Math.max(4, Math.min(innerWidth - 78, x));
-          y = Math.max(4, Math.min(innerHeight - 36, y));
-          c.x = x;
-          c.y = y;
-          c.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+
+          if(x < -30 || x > innerWidth + 10 || y < -30 || y > innerHeight + 10){
+            c.el.style.opacity = '0';
+          } else {
+            c.el.style.opacity = '1';
+            c.x = x;
+            c.y = y;
+            c.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+          }
         });
 
         orbitRaf = requestAnimationFrame(orbitLoop);
@@ -1059,6 +1073,7 @@ document.querySelectorAll('.proj-visual, .cert-card').forEach(function(v){
     }
     cursors.forEach(function(c, i){
       c.busy = false;
+      c.el.style.opacity = '1';
       c.x = innerWidth * (0.08 + (i % 7) * 0.13);
       c.y = -50;
       c.el.style.transform = 'translate3d(' + Math.round(c.x) + 'px,-50px,0)';
